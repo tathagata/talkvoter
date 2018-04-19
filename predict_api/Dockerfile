@@ -40,5 +40,5 @@ COPY . proj/
 WORKDIR ${SITE_DIR}proj/
 
 EXPOSE 8000
-CMD ["./docker-utils/run-api.sh"]
-ENTRYPOINT ["./docker-utils/entrypoint-api.sh"]
+CMD ["./docker-utils/run-predict.sh"]
+ENTRYPOINT ["./docker-utils/entrypoint-predict.sh"]

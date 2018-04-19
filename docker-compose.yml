@@ -42,12 +42,12 @@ services:
        timeout: 10s
        retries: 3
 
-   api:
+   predict:
      image: docker4data/predict_api:prod-1.0.1
      build:
        context: ./
        dockerfile: predict_api/Dockerfile
-     command: /app/docker-utils/run-api.sh
+     command: /app/docker-utils/run-predict.sh
      volumes:
        - .:/app/proj/
        - static-volume:/app/htdocs/static/
