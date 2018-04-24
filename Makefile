@@ -26,14 +26,14 @@ build:
 	docker-compose build
 
 up:
-	docker-compose up -d app db
+	docker-compose up -d
 
 iup:
 	# build and run interactively
 	docker-compose up --build
 
 start:
-	docker-compose start app db
+	docker-compose start
 
 stop:
 	docker-compose stop
@@ -79,6 +79,9 @@ test_fast: ## Can pass in parameters using p=''
 
 load_talks: up
 	docker-compose exec app flask load_talks
+
+superuser: up
+	docker-compose exec app flask createsuperuser $(username) $(password)
 
 
 # Flake 8

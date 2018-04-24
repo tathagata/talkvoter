@@ -1,15 +1,16 @@
-import itertools
+import requests
 from flask_restful import Resource, Api
 from flask_restful import reqparse
 from flask_login import login_required
-from flask import Blueprint, abort
+from flask import Blueprint, abort, current_app
 from flask_login import current_user
+from sqlalchemy import and_
 from sqlalchemy.sql.expression import func
-from sqlalchemy import distinct
 from marshmallow import ValidationError
+
 from .models import db, Talk, Vote
 from .serializers import VoteSchema, TalkSchema
-from .constants import VoteValue
+from .constants import VoteValue, vote_mapping
 
 
 PREVIOUS_YEAR = 2017
@@ -55,11 +56,18 @@ class TalkRandResource(Resource):
 
     @login_required
     def get(self):
+        talks_user_voted_on = [talk.talk_id for talk in current_user.votes]
+
         schema = TalkSchema()
-        talk_obj = db.session.query(Talk).filter(
-            Talk.year == PREVIOUS_YEAR).order_by(func.random()).first()
+        talk_obj = (db.session
+                      .query(Talk)
+                      .filter(and_(Talk.year == PREVIOUS_YEAR, ~Talk.id.in_(talks_user_voted_on)))
+                      .order_by(func.random())
+                      .first())
+
         if not talk_obj:
             abort(404, '`talk_id` is not in database')
+
         data = schema.dump(talk_obj).data
         return data, 200
 
@@ -82,21 +90,12 @@ class VoteResource(Resource):
 
     @login_required
     def post(self, id):
-        return self.get()
-
-    @login_required
-    def get(self, id):
         talk_obj = get_talk_or_abort(id)
         args = self.parser.parse_args()
         vote = args['vote']
 
-        if db.session.query(Vote).filter(
-                Vote.user == current_user, Vote.talk == talk_obj).count():
-            abort(404, 'user already voted for this talk')
-
-        vote_mapping = {
-            VoteValue.in_person.value: 1,
-            VoteValue.watch_later.value: 0, }
+        if db.session.query(Vote).filter(Vote.user == current_user, Vote.talk == talk_obj).count():
+            abort(409, 'user already voted for this talk')
 
         schema = VoteSchema()
         msg = ""
@@ -133,11 +132,18 @@ class PredictResource(Resource):
 
     @login_required
     def get(self):
+        predict_host = current_app.config['PREDICT_HOST']
+        url = "http://{}/predict/".format(predict_host)
         user = current_user
-        votes = list(itertools.chain(*db.session.query(Talk.id).join(Vote).filter(Vote.user == current_user)))
+        votes = dict(
+            db.session.query(
+                Talk.id, Vote.value).join(Vote).filter(
+                    Vote.value == vote_mapping[VoteValue.in_person.value],
+                    Vote.user == current_user))
         data = {'user_id': user.id, 'votes': votes}
-        msg = "{}".format(data)
-        ret_code = 200
+        r = requests.post(url, json=data)
+        msg = r.text
+        ret_code = r.status_code
         return {"message": msg}, ret_code
 
 
