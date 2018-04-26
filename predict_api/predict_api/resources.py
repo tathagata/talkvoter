@@ -1,10 +1,6 @@
 from flask_restful import Resource, Api
-<<<<<<< HEAD
 from flask import Blueprint, request, current_app
 from .model import ModelWrapper, vectorize_talk_text, talks_df_from_db
-=======
-from flask import Blueprint, request
->>>>>>> upstream/master
 
 
 api_bp = Blueprint('api_v1', __name__)
