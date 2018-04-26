@@ -116,8 +116,11 @@ Cast vote for `talk_id`
 
 ### **POST** `/api/v1/predict/`
 
+Returns the predicted list of `talk_id`s and takes the following inputs
+
 - User id from session
 - should pass to backend {`user_id`, `labeled_talk_ids`} where `labeled_talk_ids` is a list of `talk_id`s which the user has labeled `in_person` 
+
 
 #### Request Body
 ```json
