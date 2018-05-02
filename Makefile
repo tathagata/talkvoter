@@ -3,6 +3,7 @@ help:
 	@echo '                                                             '
 	@echo 'Usage:                                                       '
 	@echo ' make build      build images                                '
+	@echo ' make rebuild-ui build frontend code                         '
 	@echo ' make up         creates containers and starts service       '
 	@echo ' make iup        creates containers and runs interactively   '
 	@echo ' make start      starts service containers                   '
@@ -40,6 +41,12 @@ stop:
 
 down:
 	docker-compose down
+
+rebuild: down build up
+
+rebuild-ui:
+	cd frontend && yarn build && cd .. &&  \
+	docker-compose restart app
 
 attach: ## Attach to app container
 	docker attach `docker-compose ps -q app`
