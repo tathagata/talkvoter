@@ -32,11 +32,7 @@ USER app
 RUN pip install --user uwsgi
 
 COPY predict_api/requirements.txt requirements.txt
-<<<<<<< HEAD
-RUN pip install --user -r requirements.txt
-=======
 RUN pip install --no-cache-dir  --user -r requirements.txt
->>>>>>> upstream/master
 
 COPY docker-utils/ docker-utils/
 
