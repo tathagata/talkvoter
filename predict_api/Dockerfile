@@ -32,11 +32,7 @@ USER app
 RUN pip install --user uwsgi
 
 COPY predict_api/requirements.txt requirements.txt
-<<<<<<< HEAD
-RUN pip install --user -r requirements.txt
-=======
 RUN pip install --no-cache-dir  --user -r requirements.txt
->>>>>>> upstream/master
 
 COPY docker-utils/ docker-utils/
 
@@ -45,5 +41,6 @@ COPY . proj/
 WORKDIR ${SITE_DIR}proj/
 
 EXPOSE 8000
+EXPOSE 8888
 CMD ["./docker-utils/run-predict.sh"]
 ENTRYPOINT ["./docker-utils/entrypoint-predict.sh"]

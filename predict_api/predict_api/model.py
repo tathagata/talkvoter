@@ -69,8 +69,8 @@ class ModelWrapper:
         return classifier
 
     @staticmethod
-    def check_model(y_train, y_test):
-        report = sklearn.metrics.classification_report(y_train, y_test)
+    def check_model(y_test, y_pred):
+        report = sklearn.metrics.classification_report(y_test, y_pred)
         print(report)
 
     def predict(self, user_id, labeled_talk_ids):

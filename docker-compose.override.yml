@@ -10,3 +10,7 @@ services:
        - "8000:8000"
      volumes:
        - ./.pdbrc.py:/home/sivpack/.pdbrc.py
+
+   predict:
+      ports:
+        - 8888:8888

@@ -20,7 +20,8 @@ help:
 	@echo ' make logs       see container logs                          '
 	@echo ' make shell      connect to app container in new bash shell  '
 	@echo ' make dbshell    connect to postgres inside db container     '
-	@echo ' make load_talks Load talk data into Talks table             '
+	@echo ' make load_talks loads talk data into Talk table             '
+	@echo ' make jupyter    starts a jupyter notebook on predict        ' 
 	@echo '                                                             '
 
 build:
@@ -62,6 +63,11 @@ shell: ## Shell into app container
 
 dbshell: ## Shell into postgres process inside db container
 	docker-compose exec db psql -U postgres
+
+jupyter: 
+	docker-compose stop predict && \
+	docker-compose -f docker-compose.yml -f docker-compose.override.yml start predict && \
+	docker-compose exec predict jupyter notebook --allow-root --ip=0.0.0.0
 
 migration: up ## Create migrations using flask migrate
 	docker-compose exec app flask db migrate -m "$(m)" --directory ./talkvoter/migrations/
